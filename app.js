@@ -1,6 +1,6 @@
 $(document).ready(function() {
     var myID = null;
-    var socket = io('https://api.enzolefevres.fr:3000/');
+    var socket = io('ChangeMe_ServerLink');
 
     //Users System
     socket.on('isConnect', function(){
