@@ -17,7 +17,7 @@ function createMessage(pseudo, message){
         time: Date.now(),
         user: {
             pseudo: pseudo,
-            avatar: "https://api.adorable.io/avatars/50/"+pseudo+".png"
+            avatar: "https://api.hello-avatar.com/adorables/50/"+pseudo+".png"
         },
         message: message
     };
@@ -27,7 +27,7 @@ function createUser(id, pseudo){
     const user = {
         id: id,
         pseudo: pseudo,
-        avatar: "https://api.adorable.io/avatars/50/"+pseudo+".png"
+        avatar: "https://api.hello-avatar.com/adorables/50/"+pseudo+".png"
     };
     users.push(user);
     return user;
@@ -58,14 +58,14 @@ function findUserPseudo(pseudo){
 }
 
 io.on('connection', function(socket){
-    socket.emit("isConnect");
+    socket.emit("isConnect ("+socket.id+")");
 
     socket.on('login', function(pseudo){
         var canContinue = findUserPseudo(pseudo);
         
         if(canContinue){
             user = createUser(socket.id, pseudo);
-            console.log(pseudo+" a user is connect");
+            console.log(pseudo+" a user is login");
             socket.emit("login", user);
             
             io.emit('chat addUser', user);
@@ -77,7 +77,7 @@ io.on('connection', function(socket){
                 }
             }
         } else {
-            socket.emit("chat error", createMessage("SERVER", "Ce pseudo est déjà utiliser !"));
+            socket.emit("chat error", createMessage("SERVER", "Ce pseudo est déjà utilisé !"));
         }
     })
 
@@ -86,7 +86,7 @@ io.on('connection', function(socket){
 
         if(user !== null){
             removeUser(socket.id);
-            console.log("a user is disconnected");
+            console.log("a user ("+socket.id+") is disconnected");
             io.emit('chat removeUser', user);
         }
     })
@@ -94,6 +94,7 @@ io.on('connection', function(socket){
     socket.on('chat message', function(message){
         const user = getUser(socket.id);
 
+        console.log(user.pseudo+" say: "+message)
         io.emit("chat message", createMessage(user.pseudo, message));
     })
 })
